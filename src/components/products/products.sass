@@ -1,0 +1,56 @@
+.products
+  display: flex
+  justify-content: space-between
+  > div
+    width: 48%
+  &__item
+    margin-bottom: 20px
+  &__check-field
+    margin-bottom: 15px
+    margin-top: 15px
+    display: flex
+    > label
+      margin-right: 20px
+
+.admin-product
+  display: flex
+  align-items: center
+  border: 1px solid #cecece
+  border-radius: 2px
+  overflow: hidden
+  // font-family: 'Raleway'
+  cursor: pointer
+  justify-content: space-between
+  > div
+    height: 100px
+    width: 32%
+    display: flex
+    flex-wrap: wrap
+    align-items: center
+    > div
+      width: 100%
+  &__image
+    background-repeat: no-repeat
+    background-size: cover
+    background-position: 50%
+    background-color: lighten(#ccc, 15%)
+  &__label
+    color: gray
+    font-size: .8em
+    position: absolute
+    margin-top: -13px
+    margin-left: -5px
+  &__col
+    box-sizing: border-box
+    padding-left: 10px
+    padding-top: 10px
+  &__form
+    textarea
+      width: 523px
+      border: 1px solid #ccc
+      box-sizing: border-box
+      margin-bottom: 10px
+    input
+      margin-bottom: 20px
+    img
+      max-width: 200px

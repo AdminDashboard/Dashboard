@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="admin-themes-lab">
+    <meta name="author" content="themes-lab">
+    <title>Meraki Admin</title>
+    <link href="./assets/global/css/style.css" rel="stylesheet">
+    <link href="./assets/global/css/theme.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+  </head>
+  <!-- BEGIN BODY -->
+  <body class="sidebar-condensed fixed-topbar fixed-sidebar theme-sdtl color-default dashboard">
+    <!--[if lt IE 7]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div id="app">
+      <section>
+        <!-- BEGIN SIDEBAR -->
+        <div class="sidebar">
+          <div class="logopanel">
+            <h1>
+              Meraki
+            </h1>
+          </div>
+          <div class="sidebar-inner">
+            <nav-component></nav-component>
+          </div>
+        </div>
+        <!-- END SIDEBAR -->
+        <div class="main-content">
+          <!-- BEGIN TOPBAR -->
+          <div class="topbar">
+            <div class="header-left">
+              <div class="topnav">
+                <a class="menutoggle" href="#" data-toggle="sidebar-collapsed"><span class="menu__handle"><span>Menu</span></span></a>
+              </div>
+            </div>
+            <div class="header-right">
+            </div>
+            <!-- header-right -->
+          </div>
+          <!-- END TOPBAR -->
+          <!-- BEGIN PAGE CONTENT -->
+          <div class="page-content page-thin">
+              <router-view></router-view>
+          </div>
+          <!-- END PAGE CONTENT -->
+        </div>
+        <!-- END MAIN CONTENT -->
+      </section>
+    </div>
+    <!-- BEGIN PRELOADER -->
+    <div class="loader-overlay">
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    </div>
+    <!-- END PRELOADER -->
+    <a href="#" class="scrollup"><i class="fa fa-angle-up"></i></a> 
+    <script src="./assets/global/plugins/jquery/jquery-3.1.0.min.js"></script>
+    <script src="./assets/global/plugins/jquery/jquery-migrate-3.0.0.min.js"></script>
+    <script src="./assets/global/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Jquery Cookies, for theme -->
+    <script src="./assets/global/plugins/jquery-block-ui/jquery.blockUI.min.js"></script> <!-- simulate synchronous behavior when using AJAX -->
+    <script src="./assets/global/plugins/mcustom-scrollbar/jquery.mCustomScrollbar.concat.min.js"></script> <!-- Custom Scrollbar sidebar -->
+    <script src="./assets/global/plugins/bootstrap-progressbar/bootstrap-progressbar.min.js"></script> <!-- Animated Progress Bar -->
+    <script src="./assets/global/js/application.js"></script> <!-- Main Application Script -->
+    <script src="./assets/global/plugins/jquery-cookies/jquery.cookies.min.js"></script>
+    <script src="./assets/global/js/plugins.js"></script> <!-- Main Plugin Initialization Script -->
+    <script src="./assets/global/js/widgets/todo_list.js"></script>
+    <script src="./assets/global/plugins/metrojs/metrojs.min.js"></script> <!-- Flipping Panel -->
+    <!-- <script src="./assets/global/js/pages/dashboard.js"></script> -->
+    <script src="./assets/global/plugins/bootstrap-loading/lada.min.js"></script>
+    <script src="./assets/admin/layout2/js/layout.js"></script>
+    <script src="./assets/global/js/pages/login-v1.js"></script>
+  </body>
+</html>

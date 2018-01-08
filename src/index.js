@@ -21,6 +21,7 @@ import Super from './components/super-categories/super-categories.vue';
 // components
 import AuthGuard from './auth-guard.js';
 import NavComponent from './components/nav/nav.vue';
+import MenuToggle from './components/nav/menu-toggle.vue';
 
 const NotFound = {template: '<p>Page not found</p>'};
 
@@ -52,7 +53,16 @@ new Vue({
 	router,
 	store,
 	components: {
-		'nav-component': NavComponent
+		'nav-component': NavComponent,
+		'menu-toggle': MenuToggle
+	},
+	mounted () {
+		setTimeout(function() {
+	        $('.loader-overlay').addClass('loaded');
+	        $('body > section').animate({
+	            opacity: 1,
+	        }, 400);
+	    }, 500);
 	},
 	created () {
 		Firebase.initializeApp({

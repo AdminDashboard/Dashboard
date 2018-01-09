@@ -906,7 +906,6 @@ body:not(.sidebar-collapsed) .sidebar .sidebar-inner .nav-sidebar > li.nav-paren
 .main-content {
   background: #F5F5F5;
   margin-left: 240px;
-  min-height: 750px;
 }
 .main-content .page-content {
   background: #F5F5F5;

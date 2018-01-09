@@ -9,6 +9,7 @@ import '../node_modules/vuetify/dist/vuetify.min.css';
 import VueLocalStorage from 'vue-ls';
 import Firebase from 'firebase';
 import {store} from './store';
+import './temp.sass';
 
 // pages
 import SignIn from './components/sign-in/sign-in.vue';

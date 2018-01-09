@@ -5,16 +5,30 @@
 	            <div class="row">
 	                <div class="col-sm-6 col-md-4 col-md-offset-4">
 	                    <div class="account-wall">
-	                        <i class="user-img icons-faces-users-03"></i>
+	                    	<v-layout justify-space-around>
+    							<v-icon class="image-user" x-large color="white">account_circle</v-icon>
+  							</v-layout>
 	                        <form @submit.prevent.stop="signIn" class="form-signin" role="form">
-	                            <div class="append-icon">
-	                                <input v-model="email" type="email" name="username" id="username" class="form-control form-white username" placeholder="Email" required>
-	                                <i class="icon-user"></i>
-	                            </div>
-	                            <div class="append-icon m-b-20">
-	                                <input v-model="password" type="password" name="password" class="form-control form-white password" placeholder="Password" required>
-	                                <i class="icon-lock"></i>
-	                            </div>
+								<v-text-field
+								name="email"
+								label="Email"
+								single-line
+								:dark="true"
+								type="email"
+								v-model="email"
+								required
+								prepend-icon="mail_outline"
+								></v-text-field>
+								<v-text-field
+								name="password"
+								label="Password"
+								single-line
+								:dark="true"
+								type="password"
+								v-model="password"
+								required
+								prepend-icon="vpn_key"
+								></v-text-field>
 	                            <v-btn color="primary" :loading="loading" type="submit">Sign in</v-btn>
 	                            <div class="clearfix">
 	                                <p class="pull-left m-t-20"><a id="password" href="#">Forgot password?</a></p>
@@ -38,7 +52,7 @@
 export default {
 	data() {
 		return {
-			email: null,
+			email: 'tehzarathustra@gmail.com',
 			password: null,
 			loading: false
 		}
@@ -82,4 +96,6 @@ export default {
 	.btn
 		margin: 10px 0
 		width: 100%
+	.image-user
+		font-size: 10em
 </style>

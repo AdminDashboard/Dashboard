@@ -20,18 +20,7 @@
 	                                <p class="pull-left m-t-20"><a id="password" href="#">Forgot password?</a></p>
 	                                <p class="pull-right m-t-20"><a href="user-signup-v1.html">New here? Sign up</a></p>
 	                            </div>
-	                        </form>
-	                        <form class="form-password" role="form">
-	                            <div class="append-icon m-b-20">
-	                                <input type="password" name="password" class="form-control form-white password" placeholder="Password" required>
-	                                <i class="icon-lock"></i>
-	                            </div>
-	                            <button type="submit" id="submit-password" class="btn btn-lg btn-danger btn-block ladda-button" data-style="expand-left">Send Password Reset Link</button>
-	                            <div class="clearfix">
-	                                <p class="pull-left m-t-20"><a id="login" href="#">Already got an account? Sign In</a></p>
-	                                <p class="pull-right m-t-20"><a href="user-signup-v1.html">New here? Sign up</a></p>
-	                            </div>
-	                        </form>
+	                        </form>	                        
 	                    </div>
 	                </div>
 	            </div>

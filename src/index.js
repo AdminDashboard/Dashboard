@@ -1,3 +1,4 @@
+import './legacy.css';
 import 'normalize.css';
 import Vue from 'vue';
 import Vuetify from 'vuetify';

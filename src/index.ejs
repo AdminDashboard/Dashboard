@@ -7,6 +7,7 @@
     <meta name="author" content="themes-lab">
     <title>Meraki Admin</title>
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css">
   </head>
   <!-- BEGIN BODY -->
   <body class="sidebar-condensed fixed-topbar fixed-sidebar theme-sdtl color-default dashboard">
@@ -14,6 +15,7 @@
     <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
     <div id="app">
+      <v-app>
       <section>
         <!-- BEGIN SIDEBAR -->
         <div class="sidebar">
@@ -43,14 +45,13 @@
           <!-- END TOPBAR -->
           <!-- BEGIN PAGE CONTENT -->
           <div class="page-content page-thin">
-              <v-app>
-                <router-view></router-view>
-              </v-app>
+            <router-view></router-view>
           </div>
           <!-- END PAGE CONTENT -->
         </div>
         <!-- END MAIN CONTENT -->
       </section>
+      </v-app>
     </div>
     <!-- BEGIN PRELOADER -->
     <div class="loader-overlay">

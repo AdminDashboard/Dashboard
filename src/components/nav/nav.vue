@@ -69,3 +69,16 @@ export default {
 	}
 }
 </script>
+
+<style scoped lang="sass">
+.nav
+	> li > a
+		position: relative
+	a
+		text-decoration: none
+	li
+		display: flex
+		flex-wrap: wrap
+		> *
+			width: 100%
+</style>

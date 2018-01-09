@@ -15,7 +15,7 @@
 	                                <input v-model="password" type="password" name="password" class="form-control form-white password" placeholder="Password" required>
 	                                <i class="icon-lock"></i>
 	                            </div>
-	                            <button @click="signIn" type="submit" id="submit-form" class="btn btn-lg btn-danger btn-block ladda-button" data-style="expand-left">Sign In</button>
+	                            <v-btn color="primary" :loading="loading" type="submit">Sign in</v-btn>
 	                            <div class="clearfix">
 	                                <p class="pull-left m-t-20"><a id="password" href="#">Forgot password?</a></p>
 	                                <p class="pull-right m-t-20"><a href="user-signup-v1.html">New here? Sign up</a></p>
@@ -39,7 +39,7 @@
 		</div>
 		<div v-else>
 			<h1>Welcome to dashboard</h1>
-			<button class="btn btn-primary" @click="signOut" type="submit">Sign Out</button>
+			<v-btn color="primary" @click="signOut">Sign out</v-btn>
 		</div>
 	</div>
 </template>
@@ -50,7 +50,8 @@ export default {
 	data() {
 		return {
 			email: null,
-			password: null
+			password: null,
+			loading: false
 		}
 	},
 	computed: {
@@ -61,9 +62,13 @@ export default {
 	methods: {
 		signIn () {
 			this.$store.dispatch('signUserIn', {email: this.email, password: this.password});
+
+			this.loading = true;
 		},
 		signOut () {
 			this.$store.dispatch('signOut');
+
+			this.loading = false;
 		}
 	}
 }
@@ -79,4 +84,13 @@ export default {
 	z-index: 999
 	.append-icon
 		margin-bottom: 10px
+		position: relative
+		i
+			position: absolute
+			top: 50%
+			right: 10px
+			transform: translateY(-50%)
+	.btn
+		margin: 10px 0
+		width: 100%
 </style>

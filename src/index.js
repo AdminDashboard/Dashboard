@@ -24,6 +24,7 @@ import Super from './components/super-categories/super-categories.vue';
 import AuthGuard from './auth-guard.js';
 import NavComponent from './components/nav/nav.vue';
 import MenuToggle from './components/nav/menu-toggle.vue';
+import AlertComponent from './components/alert/alert.vue';
 
 const NotFound = {template: '<p>Page not found</p>'};
 
@@ -56,6 +57,7 @@ new Vue({
 	store,
 	components: {
 		'nav-component': NavComponent,
+		'alert-component': AlertComponent,
 		'menu-toggle': MenuToggle
 	},
 	mounted () {

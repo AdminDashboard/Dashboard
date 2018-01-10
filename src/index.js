@@ -13,12 +13,12 @@ import './temp.sass';
 
 // pages
 import SignIn from './components/sign-in/sign-in.vue';
-import Home from './components/home.vue';
 import Requests from './components/requests/requests.vue';
 import Settings from './components/settings/settings.vue';
 import Products from './components/products/products.vue';
 import Sub from './components/sub-categories/sub-categories.vue';
 import Super from './components/super-categories/super-categories.vue';
+import CRM from './components/crm/crm.vue';
 
 // components
 import AuthGuard from './auth-guard.js';
@@ -37,6 +37,7 @@ const routes = [
   {path: '/settings', component: Settings, beforeEnter: AuthGuard},
   {path: '/products', component: Products, beforeEnter: AuthGuard},
   {path: '/sub', component: Sub, beforeEnter: AuthGuard},
+  {path: '/crm', component: CRM, beforeEnter: AuthGuard},
   {path: '/Super', component: Super, beforeEnter: AuthGuard}
 ];
 

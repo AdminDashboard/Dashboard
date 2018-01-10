@@ -64,9 +64,16 @@ export default {
 	},
 	methods: {
 		signIn () {
-			this.$store.dispatch('signUserIn', {email: this.email, password: this.password});
-
 			this.loading = true;
+
+			this
+				.$store
+				.dispatch('signUserIn', {email: this.email, password: this.password})
+				.then((data) => {
+					if (data === 'error') {
+						this.loading = false;
+					}
+				});
 		},
 		signOut () {
 			this.$store.dispatch('signOut');

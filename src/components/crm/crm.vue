@@ -37,7 +37,57 @@
 				</template>
 				<template slot="footer">
 					<td colspan="100%">
-						<v-btn color="primary">Add user</v-btn>
+						<v-dialog v-model="dialog" persistent max-width="500px">
+						  <v-btn color="primary" dark slot="activator">Add contact</v-btn>
+						  <v-card>
+						    <v-card-title>
+						      <span class="headline">Create contact</span>
+						    </v-card-title>
+						    <v-card-text>
+						      <v-container grid-list-md>
+						        <v-layout wrap>
+						          <v-flex xs12 sm6 md6>
+						            <v-text-field v-model="name" label="Name" required></v-text-field>
+						          </v-flex>
+						          <v-flex xs12 sm6 md6>
+						            <v-text-field v-model="phone" label="Phone"
+						              required
+						            ></v-text-field>
+						          </v-flex>
+						          <v-flex xs12>
+						            <v-text-field v-model="email" label="Email" required></v-text-field>
+						          </v-flex>
+						          <v-flex xs12 sm6>
+						            <v-select
+						              label="Assign to"
+						              multiple
+						              v-model="assign"
+						              autocomplete
+						              chips
+						              :items="['writers', 'poets']"
+						            ></v-select>
+						          </v-flex>
+						          <v-flex xs12 sm6>
+						            <v-select
+						              label="Suffix"
+						              multiple
+						              v-model="suffix"
+						              autocomplete
+						              chips
+						              :items="['novel', 'poem']"
+						            ></v-select>
+						          </v-flex>
+						        </v-layout>
+						      </v-container>
+						      <small>*indicates required field</small>
+						    </v-card-text>
+						    <v-card-actions>
+						      <v-spacer></v-spacer>
+						      <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
+						      <v-btn color="blue darken-1" flat @click.native="addNewContact()">Save</v-btn>
+						    </v-card-actions>
+						  </v-card>
+						</v-dialog>
 						<v-btn color="error" v-if="hasSelectedItems" @click="deleteSelected()">Delete selected</v-btn>
 					</td>
 				</template>
@@ -47,11 +97,17 @@
 </template>
 
 <script>
-  export default {
+export default {
 	data () {
 		return {
 			selected: [],
 			search: '',
+			dialog: false,
+			name: null,
+			phone: null,
+			email: null,
+			assign: [],
+			suffix: [],
 			headers: [
 				{
 				text: '#',
@@ -136,11 +192,6 @@
 		}
 	},
 	methods: {
-		showSelected() {
-			if (!this.hasSelectedItems) {
-				return;
-			}
-		},
 		deleteSelected() {
 			const indexesToRemove = this.selected.map(item => {
 				return this.items.findIndex(arrayItem => arrayItem.order === item.order);
@@ -155,6 +206,24 @@
 			}
 
 			this.selected = [];
+		},
+		addNewContact () {
+			this.items.push({
+				order: this.items.length + 1,
+				status: 'Online',
+				name: this.name,
+				email: this.email,
+				phone: this.phone,
+				assigned: this.assign,
+				salutation: 'value',
+				suffix: this.suffix
+			});
+
+			this.$store.commit('setAlert',
+				{type: 'success', message: 'Item successufly added'}
+			);
+
+			this.dialog = false;
 		}
 	}
   }

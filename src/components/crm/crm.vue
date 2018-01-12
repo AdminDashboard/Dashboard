@@ -11,7 +11,7 @@
 		<template>
 			<v-data-table
 			v-bind:headers="headers"
-			v-bind:items="items"
+			v-bind:items="orderedItems"
 			v-bind:search="search"
 			v-model="selected"
 			item-key="name"
@@ -62,6 +62,7 @@
 						              label="Assign to"
 						              multiple
 						              v-model="assign"
+						              required
 						              autocomplete
 						              chips
 						              :items="['writers', 'poets']"
@@ -72,6 +73,7 @@
 						              label="Suffix"
 						              multiple
 						              v-model="suffix"
+						              required
 						              autocomplete
 						              chips
 						              :items="['novel', 'poem']"
@@ -84,7 +86,7 @@
 						    <v-card-actions>
 						      <v-spacer></v-spacer>
 						      <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
-						      <v-btn color="blue darken-1" flat @click.native="addNewContact()">Save</v-btn>
+						      <v-btn color="blue darken-1" flat @click.native="addNewContact()" :disabled="!isValid">Add</v-btn>
 						    </v-card-actions>
 						  </v-card>
 						</v-dialog>
@@ -108,6 +110,7 @@ export default {
 			email: null,
 			assign: [],
 			suffix: [],
+			salutation: [],
 			headers: [
 				{
 				text: '#',
@@ -189,6 +192,28 @@ export default {
 	computed: {
 		hasSelectedItems() {
 			return this.selected.length > 0;
+		},
+		orderedItems() {
+			return this.items.map((item, index) => {
+				return {
+					order: index + 1,
+					status: item.status,
+					name: item.name,
+					email: item.email,
+					phone: item.phone,
+					assigned: item.assigned,
+					salutation: item.salutation,
+					suffix: item.suffix
+				}
+			});
+		},
+		isValid() {
+			return Boolean(this.name
+				&& this.email
+				&& this.phone
+				&& this.assign.length > 0
+				&& this.salutation
+				&& this.suffix.length > 0);
 		}
 	},
 	methods: {
@@ -209,13 +234,12 @@ export default {
 		},
 		addNewContact () {
 			this.items.push({
-				order: this.items.length + 1,
 				status: 'Online',
 				name: this.name,
 				email: this.email,
 				phone: this.phone,
 				assigned: this.assign,
-				salutation: 'value',
+				salutation: 'test',
 				suffix: this.suffix
 			});
 
@@ -224,6 +248,16 @@ export default {
 			);
 
 			this.dialog = false;
+
+			this.clearNewContact();
+		},
+		clearNewContact () {
+			this.name
+				= this.email
+				= this.phone
+				= null;
+
+			this.assign = this.suffix = [];
 		}
 	}
   }

@@ -1,16 +1,16 @@
 <template>
-	<ul class="nav nav-sidebar">
+	<ul class="nav nav-sidebar" v-if="userIsAuthenticated">
 		<li>
 			<a href="#/"><i class="icon-home"></i><span>Dashboard</span></a>
+		</li>>
 		</li>
-		<li class="nav-parent" v-if="userIsAuthenticated">
-			<a href="/"><i class="icon-puzzle"></i><span>Admin</span> <span class="fa arrow"></span></a>
-			<ul class="children collapse">
-				<li class=""><a href="#/requests">Requests</a></li>
-				<li class=""><a href="#/settings">Settings</a></li>
-			</ul>
+		<li>
+			<a href="#/settings"><i class="icon-puzzle"></i><span>Settings</span></a>
 		</li>
-		<li class="nav-parent" v-if="userIsAuthenticated">
+		<li>
+			<a href="#/requests"><i class="icon-people"></i><span>Requests</span></a>
+		</li>
+		<li class="nav-parent">
 			<a href="/"><i class="icon-layers"></i><span>Inventory</span> <span class="fa arrow"></span></a>
 			<ul class="children collapse">
 				<li class=""><a href="#/products">Products</a></li>

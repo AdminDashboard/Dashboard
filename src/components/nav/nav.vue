@@ -1,20 +1,25 @@
 <template>
-	<ul class="nav nav-sidebar">
-		<li><a href="#/"><i class="icon-home"></i><span>Dashboard</span></a></li>
-		<li class="nav-parent" v-if="userIsAuthenticated">
-		<a href="/"><i class="icon-puzzle"></i><span>Admin</span> <span class="fa arrow"></span></a>
-		<ul class="children collapse">
-		<li class=""><a href="#/requests">Requests</a></li>
-		<li class=""><a href="#/settings">Settings</a></li>
-		</ul>
+	<ul class="nav nav-sidebar" v-if="userIsAuthenticated">
+		<li>
+			<a href="#/"><i class="icon-home"></i><span>Dashboard</span></a>
 		</li>
-		<li class="nav-parent" v-if="userIsAuthenticated">
-		<a href="/"><i class="icon-layers"></i><span>Inventory</span> <span class="fa arrow"></span></a>
-		<ul class="children collapse">
-		<li class=""><a href="#/products">Products</a></li>
-		<li class=""><a href="#/super">Super categories</a></li>
-		<li class=""><a href="#/sub">Sub categories</a></li>
-		</ul>
+		</li>
+		<li>
+			<a href="#/settings"><i class="icon-puzzle"></i><span>Settings</span></a>
+		</li>
+		<li>
+			<a href="#/requests"><i class="icon-people"></i><span>Requests</span></a>
+		</li>
+		<li class="nav-parent">
+			<a href="/"><i class="icon-layers"></i><span>Inventory</span> <span class="fa arrow"></span></a>
+			<ul class="children collapse">
+				<li class=""><a href="#/products">Products</a></li>
+				<li class=""><a href="#/super">Super categories</a></li>
+				<li class=""><a href="#/sub">Sub categories</a></li>
+			</ul>
+		</li>
+		<li>
+			<a href="#/crm"><i class="icon-organization"></i><span>CRM</span></a>
 		</li>
 	</ul>
 </template>
@@ -23,7 +28,8 @@
 export default {
 	computed: {
 		userIsAuthenticated () {
-			return this.$store.getters.user !== null && this.$store.getters.user !== undefined;
+			return this.$store.getters.user!== null
+				&& this.$store.getters.user !== undefined;
 		}
 	},
 	mounted () {
@@ -36,6 +42,7 @@ export default {
 		            display: ''
 		        });
 		    else $('.nav-active.active .children').css('display', 'block');
+
 		    $('.sidebar').on('click', '.nav-sidebar li.nav-parent > a', function (e) {
 		    	e.preventDefault();
 		        if ($('body').hasClass('sidebar-collapsed') && !$('body').hasClass('sidebar-hover')) return;

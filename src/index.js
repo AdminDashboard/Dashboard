@@ -1,5 +1,6 @@
 import './legacy.css';
 import 'normalize.css';
+import moment from 'moment';
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueFire from 'vuefire';

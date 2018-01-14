@@ -1,45 +1,39 @@
 <template>
-	<div class="requests-wrapper">
-		<h1>Requests</h1>
-		<table class="table">
-			<thead>
-				<tr>
-					<th @click="sortByDate(dateSortType === 'desc'
-						? 'asc'
-						: 'desc')">data</th>
-					<th>name</th>
-					<th>email</th>
-					<th>phone</th>
-					<th>message</th>
-					<th>page</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="request, index in items" v-bind:class="{success: !request.seen}">
-					<td>{{request.formatTime}}</td>
-					<td>{{request.name}}</td>
-					<td>{{request.email}}</td>
-					<td>{{request.phone}}</td>
-					<td>{{request.message}}</td>
-					<td>{{request.page}}</td>
+	<v-card>
+		<v-card-title>
+      		<h2>Requests</h2>
+    	</v-card-title>
+	    <v-data-table
+	      v-bind:headers="headers"
+	      :items="items"
+	      class="elevation-1"
+	    >
+		    <template slot="items" slot-scope="props">
+				<tr v-bind:class="{success: !props.item.seen}">
+					<td class="text-xs-right">{{ props.item.formatTime }}</td>
+					<td class="text-xs-right">{{ props.item.name }}</td>
+					<td class="text-xs-right">{{ props.item.email }}</td>
+				    <td class="text-xs-right">{{ props.item.phone }}</td>
+				    <td class="text-xs-right">{{ props.item.message }}</td>
+				    <td class="text-xs-right">{{ props.item.page }}</td>
 					<td>
-					<button class="btn btn-primary"
-					v-text="request.seen
-					? 'Mark as unseen'
-					: 'Mark as seen'"
-					@click="request.seen
-					? edit(request, false)
-					: edit (request, true)"></button>
+						<v-btn class="btn btn-primary"
+						v-text="props.item.seen
+						? 'Mark as unseen'
+						: 'Mark as seen'"
+						@click="props.item.seen
+						? edit(props.item, false)
+						: edit (props.item, true)"></v-btn>
 					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+			  	</tr>
+		    </template>
+	  	</v-data-table>
+	</v-card>
 </template>
 
 <script>
 import firebase from 'firebase';
+import moment from 'moment';
 
 export default {
 	firebase ()  {
@@ -55,23 +49,32 @@ export default {
 	data () {
 		return {
 			loaded: false,
-			dateSortType: 'desc'
+			dateSortType: 'desc',
+			headers:[
+				{ text: 'Date', value: 'formatTime' },
+				{ text: 'Name', value: 'name' },
+				{ text: 'Email', value: 'email' },
+				{ text: 'Phone', value: 'phone' },
+				{ text: 'Message', value: 'message' },
+				{ text: 'Page', value: 'page' },
+				{ text: '', value: '' }
+			]
 		}
 	},
 	watch: {
-		loaded () {
-			this.sortByDate(this.dateSortType);
-		}
+
 	},
 	computed: {
 		items () {
 			if (this.loaded) {
+				console.log(this.requests);
 				return this.requests;
 			}
 		}
 	},
 	methods: {
 		edit (item, mark) {
+
 			this.$firebaseRefs.requests.child(item['.key']).set({
 				type: item.type,
 				name: item.name,
@@ -84,16 +87,8 @@ export default {
 				formatTime: item.formatTime
 			});
 		},
-		sortByDate (type) {
-			if (!this.items) {
-				return;
-			}
-
-			if (type === 'desc') {
-				this.items.sort((a, b) => a.unixTime - b.unixTime);
-			} else {
-				this.items.sort((a, b) => a.unixTime + b.unixTime);
-			}
+		formatDate (fdate){
+			return moment(Number(fdate)).format('DD/MM/YYYY');
 		}
 	}
 }

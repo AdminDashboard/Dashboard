@@ -2,7 +2,7 @@
 	<ul class="nav nav-sidebar" v-if="userIsAuthenticated">
 		<li>
 			<a href="#/"><i class="icon-home"></i><span>Dashboard</span></a>
-		</li>>
+		</li>
 		</li>
 		<li>
 			<a href="#/settings"><i class="icon-puzzle"></i><span>Settings</span></a>
@@ -28,7 +28,8 @@
 export default {
 	computed: {
 		userIsAuthenticated () {
-			return this.$store.getters.user !== null && this.$store.getters.user !== undefined;
+			return this.$store.getters.user!== null
+				&& this.$store.getters.user !== undefined;
 		}
 	},
 	mounted () {
@@ -41,6 +42,7 @@ export default {
 		            display: ''
 		        });
 		    else $('.nav-active.active .children').css('display', 'block');
+
 		    $('.sidebar').on('click', '.nav-sidebar li.nav-parent > a', function (e) {
 		    	e.preventDefault();
 		        if ($('body').hasClass('sidebar-collapsed') && !$('body').hasClass('sidebar-hover')) return;

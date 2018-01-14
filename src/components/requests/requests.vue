@@ -33,7 +33,6 @@
 
 <script>
 import firebase from 'firebase';
-import moment from 'moment';
 
 export default {
 	firebase ()  {
@@ -49,7 +48,6 @@ export default {
 	data () {
 		return {
 			loaded: false,
-			dateSortType: 'desc',
 			headers:[
 				{ text: 'Date', value: 'formatTime' },
 				{ text: 'Name', value: 'name' },
@@ -61,13 +59,9 @@ export default {
 			]
 		}
 	},
-	watch: {
-
-	},
 	computed: {
 		items () {
 			if (this.loaded) {
-				console.log(this.requests);
 				return this.requests;
 			}
 		}
@@ -86,9 +80,6 @@ export default {
 				unixTime: item.unixTime,
 				formatTime: item.formatTime
 			});
-		},
-		formatDate (fdate){
-			return moment(Number(fdate)).format('DD/MM/YYYY');
 		}
 	}
 }

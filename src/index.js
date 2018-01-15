@@ -67,7 +67,7 @@ new Vue({
 	        $('body > section').animate({
 	            opacity: 1,
 	        }, 400);
-	    }, 500);
+	    }, 1000);
 	},
 	created () {
 		Firebase.initializeApp({

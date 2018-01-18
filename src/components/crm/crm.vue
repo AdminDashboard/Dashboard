@@ -38,7 +38,9 @@
 				<template slot="footer">
 					<td colspan="100%">
 						<v-dialog v-model="dialog" persistent max-width="500px">
-						  <v-btn color="primary" dark slot="activator">Add contact</v-btn>
+						  <v-btn color="primary" slot="activator" dark @click="addContactDialog()">
+						  	Add contact
+						  </v-btn>
 						  <v-card>
 						    <v-card-title>
 						      <span
@@ -181,6 +183,12 @@ export default {
 		}
 	},
 	methods: {
+		addContactDialog() {
+			this.mode = 'add';
+			this.clearNewContact();
+
+			// this.dialog = true;
+		},
 		getKeysToEdit() {
 			return this.selected.map(item => {
 				return this.items[item.order - 1]['.key'];

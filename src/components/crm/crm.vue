@@ -186,8 +186,6 @@ export default {
 		addContactDialog() {
 			this.mode = 'add';
 			this.clearNewContact();
-
-			// this.dialog = true;
 		},
 		getKeysToEdit() {
 			return this.selected.map(item => {

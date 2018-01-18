@@ -1,4 +1,4 @@
-# Admin dashboard test
+# Admin dashboard
 
 Requires Yarn
 

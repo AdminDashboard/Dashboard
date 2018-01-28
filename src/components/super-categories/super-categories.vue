@@ -1,11 +1,11 @@
 <template>
 	<div class="super-categories-wrapper">
-		<h1>Super categories</h1>
+		<h1>{{ type }} <v-btn color="secondary" @click="type = 'Super categories'" v-if="type === 'Sub Categories'">Back to super categories</v-btn></h1>
 		<div class="super-categories">
 			<div class="super-categories__items">
-				<div class='super-categories__item' v-for='category in categories'>
+				<div class='super-categories__item' v-for='category in currentItems'>
 					<div class="super-category">
-						<div class="super-category__image" @click="editItem(category)" v-bind:style="{'background-image': 'url(' + category.mainImage + ')'}">
+						<div class="super-category__image" @click="moveToSubCats(category)" v-bind:style="{'background-image': 'url(' + category.mainImage + ')'}">
 						</div>
 						<div class="super-category__col">
 							<div class="super-category__id"><span class="super-category__label">id</span> {{category.id}}</div>
@@ -68,13 +68,35 @@ export default {
 			id: DEFAULT_ID_CAT,
 			url: null,
 			title: null,
+			type: 'Super categories',
 			description: null,
 			showItsChilds: true,
 			mode: 'create',
 			currentItem: null
 		};
 	},
+	computed: {
+		currentItems () {
+			return this.type === 'Super categories'
+				? this.categories
+				: this.subCategories;
+		}
+	},
 	methods: {
+		moveToSubCats (item) {
+			if (this.type === 'Sub Categories') {
+				return;
+			}
+
+			const superCatId = item.id;
+			const superRef = this.$firebaseRefs.subCategories
+				.orderByChild('parentCat')
+				.equalTo(superCatId);
+
+			this.type = 'Sub Categories';
+
+			this.$bindAsArray('subCategories', superRef);
+		},
 		editItem (item) {
 			this.mode = 'edit';
 			this.id = item.id;

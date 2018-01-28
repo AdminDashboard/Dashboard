@@ -170,8 +170,6 @@ export default {
 							cat: this.cat,
 							sections: this.sections
 						});
-
-						console.log('success >');
 					})
 					.then(() => {
 						this.cancel();

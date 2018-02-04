@@ -3,9 +3,14 @@
 		<h1>Products</h1>
 		<div class="products">
 			<div class="products__items">
-				<div class='products__item' v-for='product in products'>
+				<div class='products__item' v-for='product in filteredProducts'>
 					<div class="admin-product">
-						<div class="admin-product__image" @click="editItem(product)" v-bind:style="{'background-image': 'url(' + product.mainImage + ')'}">
+						<div class="admin-product__edit">
+							<v-btn color="secondary" flat icon @click="editItem(product)">
+								<v-icon>edit</v-icon>
+							</v-btn>
+						</div>
+						<div class="admin-product__image" v-bind:style="{'background-image': 'url(' + product.mainImage + ')'}">
 						</div>
 						<div class="admin-product__col">
 							<div class="admin-product__id"><span class="admin-product__label">id</span> {{product.id}}</div>
@@ -54,7 +59,7 @@
 									v-bind:name="'type' + index">
 							</label>
 						</div>
-						<button class="btn btn-primary" v-on:click.prevent.stop="removeSection(index)">Remove section</button>
+						<v-btn color="error" v-on:click.prevent.stop="removeSection(index)">Remove section</v-btn>
 					</div>
 					<h2>Item category</h2>
 					<div class="products__check-field">
@@ -64,14 +69,14 @@
 						</label>
 					</div>
 					<div v-if="mode === 'edit'">
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="edit">Edit</button>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="deleteItem">Delete</button>
-						<button class="btn btn-primary" v-on:click.prevent.stop="addSection">Add section</button><br/><br/>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="cancel">Cancel</button>
+						<v-btn color="primary" v-on:click.prevent.stop="edit">Edit</v-btn>
+						<v-btn color="error" v-on:click.prevent.stop="deleteItem">Delete</v-btn>
+						<v-btn color="secondary" v-on:click.prevent.stop="addSection">Add section</v-btn><br/><br/>
+						<v-btn color="secondary" v-on:click.prevent.stop="cancel">Cancel</v-btn>
 					</div>
 					<div v-else>
-						<button class="btn btn-primary" v-on:click.prevent.stop="addSection">Add section</button><br/><br/>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="submit">Create new</button>
+						<v-btn color="secondary" v-on:click.prevent.stop="addSection">Add section</v-btn><br/><br/>
+						<v-btn color="primary" v-on:click.prevent.stop="submit">Create new</v-btn>
 					</div>
 				</form>
 			</div>
@@ -103,10 +108,30 @@ export default {
 			sections: [],
 			mode: 'create',
 			currentItem: null,
-			mainImageToUpload: null
+			mainImageToUpload: null,
+			filter: null
 		};
 	},
+	props: ['query'],
+	mounted () {
+		this.setQuery();
+	},
+	watch: {
+		query () {
+			this.setQuery();
+		}
+	},
+	computed: {
+		filteredProducts() {
+			return this.filter
+				? this.products.filter(item => item.cat === this.query)
+				: this.products;
+		}
+	},
 	methods: {
+		setQuery () {
+			this.filter = this.query;
+		},
 		changeSectionType (e, index) {
 			this.sections[index].type = e.target.value;
 		},

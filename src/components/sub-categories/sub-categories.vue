@@ -5,7 +5,12 @@
 			<div class="sub-categories__items">
 				<div class='sub-categories__item' v-for='category in subCategories'>
 					<div class="sub-category">
-						<div class="sub-category__image" @click="editItem(category)" v-bind:style="{'background-image': 'url(' + category.mainImage + ')'}">
+						<div class="sub-category__edit">
+							<v-btn color="secondary" flat icon @click="editItem(category)">
+								<v-icon>edit</v-icon>
+							</v-btn>
+						</div>
+						<div class="sub-category__image" @click="moveToProduct(category)" v-bind:style="{'background-image': 'url(' + category.mainImage + ')'}">
 						</div>
 						<div class="sub-category__col">
 							<div class="sub-category__id"><span class="sub-category__label">id</span> {{category.id}}</div>
@@ -31,11 +36,11 @@
 						</label>
 					</div>
 					<div v-if="mode === 'edit'">
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="edit">Edit</button>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="deleteItem">Delete</button>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="cancel">Cancel</button>
+						<v-btn color="primary" v-on:click.prevent.stop="edit">Edit</v-btn>
+						<v-btn color="error" v-on:click.prevent.stop="deleteItem">Delete</v-btn>
+						<v-btn color="secondary" v-on:click.prevent.stop="cancel">Cancel</v-btn>
 					</div>
-					<button class="btn btn-primary" v-else type="submit" v-on:click.prevent.stop="submit">Create new</button>
+					<v-btn color="primary" v-else v-on:click.prevent.stop="submit">Create new</v-btn>
 				</form>
 			</div>
 		</div>
@@ -63,7 +68,30 @@ export default {
 			currentItem: null
 		};
 	},
+	props: ['query'],
+	watch: {
+		query () {
+			this.setQuery();
+		}
+	},
+	mounted () {
+		this.setQuery();
+	},
 	methods: {
+		setQuery () {
+			if (!this.query) {
+				return;
+			};
+
+			const superRef = this.$firebaseRefs.subCategories
+				.orderByChild('parentCat')
+				.equalTo(this.query.catId);
+
+			this.$bindAsArray('subCategories', superRef);
+		},
+		moveToProduct (cat) {
+			this.$emit('moveToProduct', cat.id);
+		},
 		change (e) {
 			this.parentCat = e.target.value;
 		},

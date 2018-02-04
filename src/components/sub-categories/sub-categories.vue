@@ -27,7 +27,9 @@
 					<h2>Main data</h2>
 					<input type="text" v-model="id" name="id" placeholder="id">
 					<input type="text" v-model="title" name="title" placeholder="title">
-					<input type="text" v-model="url" name="url" placeholder="image url">
+					<h2>Category image</h2>
+					<input @change="onFilePicked" type="file" accept="image/*">
+					<img :src="url">
 					<div class="sub-categories__parents">
 						<h2>Parent category</h2>
 						<label v-for="cat in parentCategories">
@@ -65,7 +67,8 @@ export default {
 			title: null,
 			parentCat: null,
 			mode: 'create',
-			currentItem: null
+			currentItem: null,
+			mainImageToUpload: null
 		};
 	},
 	props: ['query'],
@@ -92,6 +95,24 @@ export default {
 		moveToProduct (cat) {
 			this.$emit('moveToProduct', cat.id);
 		},
+		onFilePicked (event) {
+			const file = event.target.files[0];
+			let fileName = file.name;
+
+			if (fileName.lastIndexOf('.') <= 0) {
+				return alert('please add a valid image');
+			}
+
+			const fileReader = new FileReader();
+
+			fileReader.addEventListener('load', () => {
+				this.url = fileReader.result;
+			})
+
+			fileReader.readAsDataURL(file);
+
+			this.mainImageToUpload = file;
+		},
 		change (e) {
 			this.parentCat = e.target.value;
 		},
@@ -111,6 +132,7 @@ export default {
 			this.title = null;
 			this.parentCat = null;
 			this.currentItem = null;
+			this.mainImageToUpload = null;
 		},
 		edit () {
 			if (!this.currentItem) {
@@ -118,13 +140,33 @@ export default {
 				return;
 			}
 
-			this.$firebaseRefs.subCategories.child(this.currentItem['.key']).set({
-				id: this.id,
-				mainImage: this.url,
-				title: this.title
-			});
+			const itemKey = this.currentItem['.key'];
+			const mainImage = this.mainImageToUpload;
 
-			this.cancel();
+			if (mainImage) {
+				firebase.storage().ref('sub/' + mainImage.name).put(mainImage)
+					.then(imageInfo => {
+						this.$firebaseRefs.subCategories.child(itemKey).set({
+							id: this.id,
+							mainImage: this.url || imageInfo.downloadURL,
+							title: this.title,
+							parentCat: this.parentCat
+						});
+					})
+					.then(() => {
+						this.cancel();
+					})
+			} else {
+				this.$firebaseRefs.products.child(itemKey).set({
+					id: this.id,
+					url: this.url,
+					title: this.title,
+					parentCat: this.parentCat
+				})
+				.then(() => {
+					this.cancel();
+				})
+			}
 		},
 		deleteItem () {
 			if (confirm('Are you sure you want to delete this sub category?')) {
@@ -141,12 +183,20 @@ export default {
 				return;
 			}
 
-			this.$firebaseRefs.subCategories.push({
-				id: this.id,
-				mainImage: this.url,
-				title: this.title,
-				parentCat: this.parentCat
-			});
+			const mainImage = this.mainImageToUpload;
+
+			firebase.storage().ref('products/' + mainImage.name).put(mainImage)
+				.then(imageInfo => {
+					this.$firebaseRefs.subCategories.push({
+						id: this.id,
+						mainImage: imageInfo.downloadURL,
+						title: this.title,
+						parentCat: this.parentCat
+					});
+				})
+				.catch(err => {
+					console.log('error >', err);
+				})
 		}
 	}
 }

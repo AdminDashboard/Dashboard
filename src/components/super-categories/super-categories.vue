@@ -34,7 +34,9 @@
 						<option value="bathroom">bathroom</option>
 					</select>
 					<input type="text" v-model="title" name="title" placeholder="title">
-					<input type="text" v-model="url" name="url" placeholder="image url">
+					<h2>Category image</h2>
+					<input @change="onFilePicked" type="file" accept="image/*">
+					<img :src="url">
 					<textarea placeholder="description" v-model="description"></textarea>
 					<div>
 						<label>
@@ -76,7 +78,8 @@ export default {
 			description: null,
 			showItsChilds: true,
 			mode: 'create',
-			currentItem: null
+			currentItem: null,
+			mainImageToUpload: null
 		};
 	},
 	methods: {
@@ -85,6 +88,24 @@ export default {
 				path: {catId: item.id},
 				old: 'parentCat'
 			});
+		},
+		onFilePicked (event) {
+			const file = event.target.files[0];
+			let fileName = file.name;
+
+			if (fileName.lastIndexOf('.') <= 0) {
+				return alert('please add a valid image');
+			}
+
+			const fileReader = new FileReader();
+
+			fileReader.addEventListener('load', () => {
+				this.url = fileReader.result;
+			})
+
+			fileReader.readAsDataURL(file);
+
+			this.mainImageToUpload = file;
 		},
 		editItem (item) {
 			this.mode = 'edit';
@@ -104,6 +125,7 @@ export default {
 			this.description = null;
 			this.showItsChilds = true;
 			this.currentItem = null;
+			this.mainImageToUpload = null;
 		},
 		edit () {
 			if (!this.currentItem) {
@@ -111,13 +133,35 @@ export default {
 				return;
 			}
 
-			this.$firebaseRefs.categories.child(this.currentItem['.key']).set({
-				id: this.id,
-				mainImage: this.url,
-				description: this.description,
-				showItsChilds: this.showItsChilds,
-				title: this.title
-			});
+			const itemKey = this.currentItem['.key'];
+			const mainImage = this.mainImageToUpload;
+
+			if (mainImage) {
+				firebase.storage().ref('super/' + mainImage.name).put(mainImage)
+					.then(imageInfo => {
+						this.$firebaseRefs.categories.child(itemKey).set({
+							id: this.id,
+							mainImage: imageInfo.downloadURL || this.url,
+							description: this.description,
+							showItsChilds: this.showItsChilds,
+							title: this.title
+						});
+					})
+					.then(() => {
+						this.cancel();
+					})
+			} else {
+				this.$firebaseRefs.categories.child(itemKey).set({
+					id: this.id,
+					mainImage: this.url,
+					description: this.description,
+					showItsChilds: this.showItsChilds,
+					title: this.title
+				})
+				.then(() => {
+					this.cancel();
+				})
+			}
 
 			this.cancel();
 		},
@@ -136,13 +180,21 @@ export default {
 				return;
 			}
 
-			this.$firebaseRefs.categories.push({
-				id: this.id,
-				mainImage: this.url,
-				description: this.description,
-				title: this.title,
-				showItsChilds: this.showItsChilds
-			});
+			const mainImage = this.mainImageToUpload;
+
+			firebase.storage().ref('super/' + mainImage.name).put(mainImage)
+				.then(imageInfo => {
+					this.$firebaseRefs.categories.push({
+						id: this.id,
+						mainImage: imageInfo.downloadURL || this.url,
+						description: this.description,
+						showItsChilds: this.showItsChilds,
+						title: this.title
+					});
+				})
+				.catch(err => {
+					console.log('error >', err);
+				})
 		}
 	}
 }

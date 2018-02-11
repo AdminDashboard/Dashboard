@@ -26,7 +26,7 @@
 					<form-input v-model="id" :passedLabel="'id'" :passedValue="id"></form-input>
 					<form-input v-model="title" :passedLabel="'Title'" :passedValue="title"></form-input>
 					<h2>Product image</h2>
-					<input @change="onFilePicked" type="file" accept="image/*">
+					<input id="main-file" @change="onFilePicked" type="file" accept="image/*">
 					<img :src="url">
 					<h2>Price</h2>
 					<form-input v-model="price" :passedLabel="'Price'" :passedValue="price"></form-input>
@@ -36,10 +36,8 @@
 						<h2>Section: {{index + 1}}</h2>
 						<input type="text"
 							v-model="section.title" placeholder="section title">
-						<input type="text"
-							v-model="section.image1" placeholder="section image1">
-						<input type="text"
-							v-model="section.image2" placeholder="section image2">
+						<input :id="`section-file:${index}`" @change="onFilePicked" type="file" accept="image/*">
+						<img :src="section.image1">
 						<textarea placeholder="description" v-model="section.description"></textarea>
 						<div>
 							<h3>Orientation: </h3>
@@ -109,6 +107,7 @@ export default {
 			mode: 'create',
 			currentItem: null,
 			mainImageToUpload: null,
+			sectionImageToUpload: null,
 			filter: null
 		};
 	},
@@ -168,6 +167,7 @@ export default {
 			this.priceText = null;
 			this.currentItem = null;
 			this.mainImageToUpload = null;
+			this.sectionImageToUpload = null;
 		},
 		edit () {
 			if (!this.currentItem) {
@@ -223,8 +223,7 @@ export default {
 				title: null,
 				type: 'left',
 				description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit accusamus reiciendis quas nemo qui perferendis provident, laborum impedit velit voluptates corporis quam tempora, deleniti distinctio vitae nisi neque repellendus amet!',
-				image1: 'https://firebasestorage.googleapis.com/v0/b/meraki-test-eb979.appspot.com/o/table2.png?alt=media&token=66b76efe-11fe-4885-a111-f7315dc6ce75',
-				image2: 'https://firebasestorage.googleapis.com/v0/b/meraki-test-eb979.appspot.com/o/table2.png?alt=media&token=66b76efe-11fe-4885-a111-f7315dc6ce75'
+				image1: 'https://firebasestorage.googleapis.com/v0/b/meraki-test-eb979.appspot.com/o/table2.png?alt=media&token=66b76efe-11fe-4885-a111-f7315dc6ce75'
 			});
 		},
 		deleteItem () {
@@ -232,9 +231,8 @@ export default {
 				this.$firebaseRefs.products.child(this.currentItem['.key']).remove();
 			}
 		},
-		onFilePicked (event) {
-			const file = event.target.files[0];
-			let fileName = file.name;
+		setFileReader (file, type) {
+			const fileName = file.name;
 
 			if (fileName.lastIndexOf('.') <= 0) {
 				return alert('please add a valid image');
@@ -243,12 +241,27 @@ export default {
 			const fileReader = new FileReader();
 
 			fileReader.addEventListener('load', () => {
-				this.url = fileReader.result;
-			})
+				if (type === 'main-file') {
+					this.url = fileReader.result;
+					this.mainImageToUpload = file;
+				} else {
+					const sectionIndex = type.split(':')[1];
+
+					firebase.storage().ref('products/' + file.name)
+						.put(file)
+						.then(imageInfo => {
+							this.sections[sectionIndex].image1 = imageInfo.downloadURL;
+						});
+				}
+			});
 
 			fileReader.readAsDataURL(file);
+		},
+		onFilePicked (event) {
+			const file = event.target.files[0];
+			const type = event.target.id;
 
-			this.mainImageToUpload = file;
+			this.setFileReader(file, type);
 		},
 		submit (e) {
 			if (!this.id || !this.title) {

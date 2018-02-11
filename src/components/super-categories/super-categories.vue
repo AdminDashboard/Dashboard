@@ -133,30 +133,34 @@ export default {
 				return;
 			}
 
+			const id = this.id;
+			const title = this.title;
+			const description = this.description || '';
+			const showItsChilds = this.showItsChilds;
 			const itemKey = this.currentItem['.key'];
 			const mainImage = this.mainImageToUpload;
 
 			if (mainImage) {
 				firebase.storage().ref('super/' + mainImage.name).put(mainImage)
 					.then(imageInfo => {
-						this.$firebaseRefs.categories.child(itemKey).set({
-							id: this.id,
+						this.$firebaseRefs.categories.child(itemKey).update({
 							mainImage: imageInfo.downloadURL || this.url,
-							description: this.description,
-							showItsChilds: this.showItsChilds,
-							title: this.title
+							id,
+							description,
+							showItsChilds,
+							title
 						});
 					})
 					.then(() => {
 						this.cancel();
 					})
 			} else {
-				this.$firebaseRefs.categories.child(itemKey).set({
-					id: this.id,
+				this.$firebaseRefs.categories.child(itemKey).update({
+					id,
 					mainImage: this.url,
-					description: this.description,
-					showItsChilds: this.showItsChilds,
-					title: this.title
+					description,
+					showItsChilds,
+					title
 				})
 				.then(() => {
 					this.cancel();

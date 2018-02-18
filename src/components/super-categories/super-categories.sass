@@ -21,12 +21,20 @@
   select
     width: 172px
     display: inline-block
-
+  &__edit
+    width: 50px !important
+    position: absolute
+    right: 0
+    display: none !important
+  &__form
+    img
+      width: 100%
 
 .super-category
   display: flex
   align-items: center
   border: 1px solid #cecece
+  position: relative
   border-radius: 2px
   overflow: hidden
   // font-family: 'Raleway'
@@ -55,3 +63,6 @@
     box-sizing: border-box
     padding-left: 10px
     padding-top: 10px
+  &:hover
+    .super-categories__edit
+      display: block !important

@@ -3,9 +3,14 @@
 		<h1>Products</h1>
 		<div class="products">
 			<div class="products__items">
-				<div class='products__item' v-for='product in products'>
+				<div class='products__item' v-for='product in filteredProducts'>
 					<div class="admin-product">
-						<div class="admin-product__image" @click="editItem(product)" v-bind:style="{'background-image': 'url(' + product.mainImage + ')'}">
+						<div class="admin-product__edit">
+							<v-btn color="secondary" flat icon @click="editItem(product)">
+								<v-icon>edit</v-icon>
+							</v-btn>
+						</div>
+						<div class="admin-product__image" v-bind:style="{'background-image': 'url(' + product.mainImage + ')'}">
 						</div>
 						<div class="admin-product__col">
 							<div class="admin-product__id"><span class="admin-product__label">id</span> {{product.id}}</div>
@@ -21,7 +26,7 @@
 					<form-input v-model="id" :passedLabel="'id'" :passedValue="id"></form-input>
 					<form-input v-model="title" :passedLabel="'Title'" :passedValue="title"></form-input>
 					<h2>Product image</h2>
-					<input @change="onFilePicked" type="file" accept="image/*">
+					<input id="main-file" @change="onFilePicked" type="file" accept="image/*">
 					<img :src="url">
 					<h2>Price</h2>
 					<form-input v-model="price" :passedLabel="'Price'" :passedValue="price"></form-input>
@@ -31,10 +36,8 @@
 						<h2>Section: {{index + 1}}</h2>
 						<input type="text"
 							v-model="section.title" placeholder="section title">
-						<input type="text"
-							v-model="section.image1" placeholder="section image1">
-						<input type="text"
-							v-model="section.image2" placeholder="section image2">
+						<input :id="`section-file:${index}`" @change="onFilePicked" type="file" accept="image/*">
+						<img :src="section.image1">
 						<textarea placeholder="description" v-model="section.description"></textarea>
 						<div>
 							<h3>Orientation: </h3>
@@ -54,7 +57,7 @@
 									v-bind:name="'type' + index">
 							</label>
 						</div>
-						<button class="btn btn-primary" v-on:click.prevent.stop="removeSection(index)">Remove section</button>
+						<v-btn color="error" v-on:click.prevent.stop="removeSection(index)">Remove section</v-btn>
 					</div>
 					<h2>Item category</h2>
 					<div class="products__check-field">
@@ -64,14 +67,14 @@
 						</label>
 					</div>
 					<div v-if="mode === 'edit'">
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="edit">Edit</button>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="deleteItem">Delete</button>
-						<button class="btn btn-primary" v-on:click.prevent.stop="addSection">Add section</button><br/><br/>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="cancel">Cancel</button>
+						<v-btn color="primary" v-on:click.prevent.stop="edit">Edit</v-btn>
+						<v-btn color="error" v-on:click.prevent.stop="deleteItem">Delete</v-btn>
+						<v-btn color="secondary" v-on:click.prevent.stop="addSection">Add section</v-btn><br/><br/>
+						<v-btn color="secondary" v-on:click.prevent.stop="cancel">Cancel</v-btn>
 					</div>
 					<div v-else>
-						<button class="btn btn-primary" v-on:click.prevent.stop="addSection">Add section</button><br/><br/>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="submit">Create new</button>
+						<v-btn color="secondary" v-on:click.prevent.stop="addSection">Add section</v-btn><br/><br/>
+						<v-btn color="primary" v-on:click.prevent.stop="submit">Create new</v-btn>
 					</div>
 				</form>
 			</div>
@@ -103,10 +106,31 @@ export default {
 			sections: [],
 			mode: 'create',
 			currentItem: null,
-			mainImageToUpload: null
+			mainImageToUpload: null,
+			sectionImageToUpload: null,
+			filter: null
 		};
 	},
+	props: ['query'],
+	mounted () {
+		this.setQuery();
+	},
+	watch: {
+		query () {
+			this.setQuery();
+		}
+	},
+	computed: {
+		filteredProducts() {
+			return this.filter
+				? this.products.filter(item => item.cat === this.query)
+				: this.products;
+		}
+	},
 	methods: {
+		setQuery () {
+			this.filter = this.query;
+		},
 		changeSectionType (e, index) {
 			this.sections[index].type = e.target.value;
 		},
@@ -143,6 +167,7 @@ export default {
 			this.priceText = null;
 			this.currentItem = null;
 			this.mainImageToUpload = null;
+			this.sectionImageToUpload = null;
 		},
 		edit () {
 			if (!this.currentItem) {
@@ -170,8 +195,6 @@ export default {
 							cat: this.cat,
 							sections: this.sections
 						});
-
-						console.log('success >');
 					})
 					.then(() => {
 						this.cancel();
@@ -200,8 +223,7 @@ export default {
 				title: null,
 				type: 'left',
 				description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit accusamus reiciendis quas nemo qui perferendis provident, laborum impedit velit voluptates corporis quam tempora, deleniti distinctio vitae nisi neque repellendus amet!',
-				image1: 'https://firebasestorage.googleapis.com/v0/b/meraki-test-eb979.appspot.com/o/table2.png?alt=media&token=66b76efe-11fe-4885-a111-f7315dc6ce75',
-				image2: 'https://firebasestorage.googleapis.com/v0/b/meraki-test-eb979.appspot.com/o/table2.png?alt=media&token=66b76efe-11fe-4885-a111-f7315dc6ce75'
+				image1: 'https://firebasestorage.googleapis.com/v0/b/meraki-test-eb979.appspot.com/o/table2.png?alt=media&token=66b76efe-11fe-4885-a111-f7315dc6ce75'
 			});
 		},
 		deleteItem () {
@@ -209,9 +231,8 @@ export default {
 				this.$firebaseRefs.products.child(this.currentItem['.key']).remove();
 			}
 		},
-		onFilePicked (event) {
-			const file = event.target.files[0];
-			let fileName = file.name;
+		setFileReader (file, type) {
+			const fileName = file.name;
 
 			if (fileName.lastIndexOf('.') <= 0) {
 				return alert('please add a valid image');
@@ -220,12 +241,27 @@ export default {
 			const fileReader = new FileReader();
 
 			fileReader.addEventListener('load', () => {
-				this.url = fileReader.result;
-			})
+				if (type === 'main-file') {
+					this.url = fileReader.result;
+					this.mainImageToUpload = file;
+				} else {
+					const sectionIndex = type.split(':')[1];
+
+					firebase.storage().ref('products/' + file.name)
+						.put(file)
+						.then(imageInfo => {
+							this.sections[sectionIndex].image1 = imageInfo.downloadURL;
+						});
+				}
+			});
 
 			fileReader.readAsDataURL(file);
+		},
+		onFilePicked (event) {
+			const file = event.target.files[0];
+			const type = event.target.id;
 
-			this.mainImageToUpload = file;
+			this.setFileReader(file, type);
 		},
 		submit (e) {
 			if (!this.id || !this.title) {

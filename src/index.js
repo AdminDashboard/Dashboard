@@ -15,6 +15,7 @@ import './temp.sass';
 import SignIn from './components/sign-in/sign-in.vue';
 import Requests from './components/requests/requests.vue';
 import Settings from './components/settings/settings.vue';
+import Inventory from './components/inventory/inventory.vue';
 import Products from './components/products/products.vue';
 import Sub from './components/sub-categories/sub-categories.vue';
 import Super from './components/super-categories/super-categories.vue';
@@ -38,7 +39,8 @@ const routes = [
   {path: '/products', component: Products, beforeEnter: AuthGuard},
   {path: '/sub', component: Sub, beforeEnter: AuthGuard},
   {path: '/crm', component: CRM, beforeEnter: AuthGuard},
-  {path: '/Super', component: Super, beforeEnter: AuthGuard}
+  {path: '/Super', component: Super, beforeEnter: AuthGuard},
+  {path: '/inventory', component: Inventory, beforeEnter: AuthGuard}
 ];
 
 const VueLocalStorageOptions = {

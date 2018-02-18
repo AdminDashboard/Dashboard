@@ -5,7 +5,12 @@
 			<div class="super-categories__items">
 				<div class='super-categories__item' v-for='category in categories'>
 					<div class="super-category">
-						<div class="super-category__image" @click="editItem(category)" v-bind:style="{'background-image': 'url(' + category.mainImage + ')'}">
+						<div class="super-categories__edit">
+							<v-btn color="secondary" flat icon @click="editItem(category)">
+								<v-icon>edit</v-icon>
+							</v-btn>
+						</div>
+						<div class="super-category__image" @click="moveToSubCats(category)" v-bind:style="{'background-image': 'url(' + category.mainImage + ')'}">
 						</div>
 						<div class="super-category__col">
 							<div class="super-category__id"><span class="super-category__label">id</span> {{category.id}}</div>
@@ -29,7 +34,9 @@
 						<option value="bathroom">bathroom</option>
 					</select>
 					<input type="text" v-model="title" name="title" placeholder="title">
-					<input type="text" v-model="url" name="url" placeholder="image url">
+					<h2>Category image</h2>
+					<input @change="onFilePicked" type="file" accept="image/*">
+					<img :src="url">
 					<textarea placeholder="description" v-model="description"></textarea>
 					<div>
 						<label>
@@ -39,11 +46,11 @@
 						<br/><br/>
 					</div>
 					<div v-if="mode === 'edit'">
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="edit">Edit</button>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="deleteItem">Delete</button>
-						<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="cancel">Cancel</button>
+						<v-btn color="primary" v-on:click.prevent.stop="edit">Edit</v-btn>
+						<v-btn color="error" v-on:click.prevent.stop="deleteItem">Delete</v-btn>
+						<v-btn color="secondary" v-on:click.prevent.stop="cancel">Cancel</v-btn>
 					</div>
-					<button class="btn btn-primary" v-else type="submit" v-on:click.prevent.stop="submit">Create new</button>
+					<v-btn color="primary" v-else v-on:click.prevent.stop="submit">Create new</v-btn>
 				</form>
 			</div>
 		</div>
@@ -71,10 +78,35 @@ export default {
 			description: null,
 			showItsChilds: true,
 			mode: 'create',
-			currentItem: null
+			currentItem: null,
+			mainImageToUpload: null
 		};
 	},
 	methods: {
+		moveToSubCats (item) {
+			this.$emit('moveToSub', {
+				path: {catId: item.id},
+				old: 'parentCat'
+			});
+		},
+		onFilePicked (event) {
+			const file = event.target.files[0];
+			let fileName = file.name;
+
+			if (fileName.lastIndexOf('.') <= 0) {
+				return alert('please add a valid image');
+			}
+
+			const fileReader = new FileReader();
+
+			fileReader.addEventListener('load', () => {
+				this.url = fileReader.result;
+			})
+
+			fileReader.readAsDataURL(file);
+
+			this.mainImageToUpload = file;
+		},
 		editItem (item) {
 			this.mode = 'edit';
 			this.id = item.id;
@@ -93,6 +125,7 @@ export default {
 			this.description = null;
 			this.showItsChilds = true;
 			this.currentItem = null;
+			this.mainImageToUpload = null;
 		},
 		edit () {
 			if (!this.currentItem) {
@@ -100,13 +133,39 @@ export default {
 				return;
 			}
 
-			this.$firebaseRefs.categories.child(this.currentItem['.key']).set({
-				id: this.id,
-				mainImage: this.url,
-				description: this.description,
-				showItsChilds: this.showItsChilds,
-				title: this.title
-			});
+			const id = this.id;
+			const title = this.title;
+			const description = this.description || '';
+			const showItsChilds = this.showItsChilds;
+			const itemKey = this.currentItem['.key'];
+			const mainImage = this.mainImageToUpload;
+
+			if (mainImage) {
+				firebase.storage().ref('super/' + mainImage.name).put(mainImage)
+					.then(imageInfo => {
+						this.$firebaseRefs.categories.child(itemKey).update({
+							mainImage: imageInfo.downloadURL || this.url,
+							id,
+							description,
+							showItsChilds,
+							title
+						});
+					})
+					.then(() => {
+						this.cancel();
+					})
+			} else {
+				this.$firebaseRefs.categories.child(itemKey).update({
+					id,
+					mainImage: this.url,
+					description,
+					showItsChilds,
+					title
+				})
+				.then(() => {
+					this.cancel();
+				})
+			}
 
 			this.cancel();
 		},
@@ -125,13 +184,21 @@ export default {
 				return;
 			}
 
-			this.$firebaseRefs.categories.push({
-				id: this.id,
-				mainImage: this.url,
-				description: this.description,
-				title: this.title,
-				showItsChilds: this.showItsChilds
-			});
+			const mainImage = this.mainImageToUpload;
+
+			firebase.storage().ref('super/' + mainImage.name).put(mainImage)
+				.then(imageInfo => {
+					this.$firebaseRefs.categories.push({
+						id: this.id,
+						mainImage: imageInfo.downloadURL || this.url,
+						description: this.description,
+						showItsChilds: this.showItsChilds,
+						title: this.title
+					});
+				})
+				.catch(err => {
+					console.log('error >', err);
+				})
 		}
 	}
 }

@@ -26,8 +26,19 @@
 					<form-input v-model="id" :passedLabel="'id'" :passedValue="id"></form-input>
 					<form-input v-model="title" :passedLabel="'Title'" :passedValue="title"></form-input>
 					<h2>Product image</h2>
-					<input id="main-file" @change="onFilePicked" type="file" accept="image/*">
-					<img :src="url">
+					<!--  -->
+					<div class="image-upload">
+						<input id="main-file" @change="onFilePicked" type="file" accept="image/*">
+						<img :src="url">
+					</div>
+					<!--  -->
+
+					<!--  -->
+					<div class="image-upload">
+						<input id="secondary-file" @change="onFilePicked" type="file" accept="image/*">
+						<img :src="url2">
+					</div>
+					<!--  -->
 					<h2>Price</h2>
 					<form-input v-model="price" :passedLabel="'Price'" :passedValue="price"></form-input>
 					<form-input v-model="priceText" :passedLabel="'Price text'" :passedValue="priceText"></form-input>
@@ -36,8 +47,17 @@
 						<h2>Section: {{index + 1}}</h2>
 						<input type="text"
 							v-model="section.title" placeholder="section title">
-						<input :id="`section-file:${index}`" @change="onFilePicked" type="file" accept="image/*">
-						<img :src="section.image1">
+						<!--  -->
+						<div class="image-upload">
+							<input :id="`section-file:${index}`" @change="onFilePicked" type="file" accept="image/*">
+							<img :src="section.image1">
+						</div>
+						<!--  -->
+						<div class="image-upload">
+							<input :id="`section-secondary-file:${index}`" @change="onFilePicked" type="file" accept="image/*">
+							<img :src="section.image2">
+						</div>
+						<!--  -->
 						<textarea placeholder="description" v-model="section.description"></textarea>
 						<div>
 							<h3>Orientation: </h3>
@@ -107,6 +127,7 @@ export default {
 			mode: 'create',
 			currentItem: null,
 			mainImageToUpload: null,
+			secondImageToUpload: null,
 			sectionImageToUpload: null,
 			filter: null
 		};
@@ -244,8 +265,22 @@ export default {
 				if (type === 'main-file') {
 					this.url = fileReader.result;
 					this.mainImageToUpload = file;
+				} else if (type === 'secondary-file') {
+					this.url2 = fileReader.result;
+					this.secondImageToUpload = file;
 				} else {
 					const sectionIndex = type.split(':')[1];
+					const sectionType = type.split(':')[0];
+
+					if (sectionType === 'section-secondary-file') {
+						firebase.storage().ref('products/' + file.name)
+							.put(file)
+							.then(imageInfo => {
+								this.sections[sectionIndex].image2 = imageInfo.downloadURL;
+							});
+
+						return;
+					}
 
 					firebase.storage().ref('products/' + file.name)
 						.put(file)
@@ -270,19 +305,27 @@ export default {
 			}
 
 			const mainImage = this.mainImageToUpload;
+			const secondImage = this.secondImageToUpload;
 
 			firebase.storage().ref('products/' + mainImage.name).put(mainImage)
 				.then(imageInfo => {
-					this.$firebaseRefs.products.push({
-						id: this.id,
-						mainImage: imageInfo.downloadURL,
-						// secondImage: this.url2,
-						price: this.price,
-						priceText: this.priceText,
-						title: this.title,
-						cat: this.cat,
-						sections: this.sections
-					});
+
+					firebase
+						.storage()
+						.ref('products/' + secondImage.name)
+						.put(secondImage)
+						.then(secondImageInfo => {
+							this.$firebaseRefs.products.push({
+								id: this.id,
+								mainImage: imageInfo.downloadURL,
+								secondImage: secondImageInfo.downloadURL,
+								price: this.price,
+								priceText: this.priceText,
+								title: this.title,
+								cat: this.cat,
+								sections: this.sections
+							});
+						});
 				})
 				.catch(err => {
 					console.log('error >', err);
@@ -294,3 +337,18 @@ export default {
 	}
 }
 </script>
+
+<style lang='sass'>
+.image-upload
+	display: flex
+	flex-wrap: wrap
+	padding: 10px
+	box-sizing: border-box
+	background-color: lightblue
+	margin-bottom: 10px
+	align-items: center
+	justify-content: space-between
+	border-radius: 3px
+	> *
+		display: block
+</style>

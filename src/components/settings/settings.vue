@@ -5,8 +5,10 @@
 			<h2>About:</h2>
 			<textarea v-model="userText"></textarea>
 			<div class="settings__logo">
-				<form-input v-model="logo" :passedLabel="'Logo'" :passedValue="logo"></form-input>
-				<img :src="logo">
+				<div class="image-upload">
+					<input id="secondary-file" @change="onFilePicked" type="file" accept="image/*">
+					<img :src="logo">
+				</div>
 			</div>
 			<div>
 				<button class="btn btn-primary" type="submit" v-on:click.prevent.stop="submit">Save</button>
@@ -41,7 +43,8 @@ export default {
 		return {
 			userText: null,
 			loaded: false,
-			logo: null
+			logo: null,
+			logoToUpload: null
 		};
 	},
 	watch: {
@@ -79,13 +82,37 @@ export default {
 				return;
 			}
 
-			this.$firebaseRefs.settings.child(this.logoItem['.key']).set({
-				url: this.logo
-			});
+			firebase.storage().ref('settings/' + this.logoToUpload.name).put(this.logoToUpload)
+				.then(imageInfo => {
+					this.$firebaseRefs.settings.child(this.logoItem['.key']).update({
+						url: imageInfo.downloadURL
+					});
+				})
+				.then(() => {
+					this.$store.commit('setAlert', {type: 'success', message: 'logo has updated'});
+				});
 		},
 		submit () {
 			this.editAbout();
 			this.editLogo();
+		},
+		onFilePicked (event) {
+			const file = event.target.files[0];
+			let fileName = file.name;
+
+			if (fileName.lastIndexOf('.') <= 0) {
+				return alert('please add a valid image');
+			}
+
+			const fileReader = new FileReader();
+
+			fileReader.addEventListener('load', () => {
+				this.logo = fileReader.result;
+			})
+
+			fileReader.readAsDataURL(file);
+
+			this.logoToUpload = file;
 		}
 	},
 	components: {
@@ -108,4 +135,17 @@ textarea
 		width: 400px
 		img
 			max-width: 200px
+
+.image-upload
+	display: flex
+	flex-wrap: wrap
+	padding: 10px
+	box-sizing: border-box
+	background-color: lightblue
+	margin-bottom: 10px
+	align-items: center
+	justify-content: space-between
+	border-radius: 3px
+	> *
+		display: block
 </style>

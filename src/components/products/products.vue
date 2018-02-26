@@ -224,7 +224,7 @@ export default {
 						console.log('error >', err);
 					})
 			} else {
-				this.$firebaseRefs.products.child(itemKey).set({
+				const query = {
 					id: this.id,
 					mainImage: this.url,
 					secondImage: this.url2 || this.url,
@@ -233,10 +233,14 @@ export default {
 					priceText: this.priceText,
 					cat: this.cat,
 					sections: this.sections
-				})
-				.then(() => {
-					this.cancel();
-				});
+				};
+
+				this.$firebaseRefs.products.child(itemKey).update(query)
+					.then(() => {
+						this.$store.commit('setAlert', {type: 'success', message: 'item has updated'});
+
+						this.cancel();
+					});
 			}
 		},
 		addSection () {

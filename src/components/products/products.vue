@@ -229,8 +229,8 @@ export default {
 					mainImage: this.url,
 					secondImage: this.url2 || this.url,
 					title: this.title,
-					price: this.price,
-					priceText: this.priceText,
+					price: this.price || '',
+					priceText: this.priceText || '',
 					cat: this.cat,
 					sections: this.sections
 				};
